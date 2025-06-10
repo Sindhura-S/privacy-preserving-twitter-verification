@@ -12,7 +12,7 @@ This repository contains the proof-of-concept implementation for the M.Tech proj
 
 ### **Abstract**
 
-[cite_start]The proliferation of social media platforms has been accompanied by a significant erosion of trust, largely fueled by the ambiguity of account verification mechanisms. [cite_start]This project addresses the urgent need for a robust and trustworthy system by proposing a differentiated **two-tier verification framework**. [cite_start]This framework separates a basic, subscription-based "Blue Badge" from a high-assurance "Green Badge" that signifies cryptographically verified authenticity using Zero-Knowledge Proofs (ZKPs). [cite_start]As a proof-of-concept, this work develops ZKP circuits to verify entities within the Indian digital identity ecosystem.
+The proliferation of social media platforms has been accompanied by a significant erosion of trust, largely fueled by the ambiguity of account verification mechanisms. [cite_start]This project addresses the urgent need for a robust and trustworthy system by proposing a differentiated **two-tier verification framework**. [cite_start]This framework separates a basic, subscription-based "Blue Badge" from a high-assurance "Green Badge" that signifies cryptographically verified authenticity using Zero-Knowledge Proofs (ZKPs). [cite_start]As a proof-of-concept, this work develops ZKP circuits to verify entities within the Indian digital identity ecosystem.
 
 ---
 
