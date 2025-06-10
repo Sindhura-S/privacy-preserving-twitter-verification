@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aadhaar Verification ZKP Flowchart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f9fafb; /* gray-50 */ }
+        .flowchart-container { max-width: 72rem; /* max-w-6xl */ margin: auto; padding: 2rem; }
+        .flowchart-section {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+        }
+        .section-title {
+            font-size: 1.75rem; /* text-2xl */
+            font-weight: 700; /* bold */
+            color: #4f46e5; /* indigo-600 */
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #e5e7eb; /* gray-200 */
+            text-align: center;
+        }
+        .flow-step {
+            background-color: #f3f4f6; /* gray-100 */
+            border: 1px solid #e5e7eb; /* gray-200 */
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.05), 0 1px 2px 0 rgba(0,0,0,0.03);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .flow-step:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.07), 0 2px 4px 0 rgba(0,0,0,0.04);
+        }
+        .step-heading {
+            font-size: 1.125rem; /* text-lg */
+            font-weight: 600; /* semibold */
+            color: #1f2937; /* gray-800 */
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+        .step-heading i {
+            margin-right: 0.75rem;
+            color: #6366f1; /* indigo-500 */
+            width: 20px;
+            text-align: center;
+        }
+        .step-description {
+            font-size: 0.875rem; /* text-sm */
+            color: #4b5563; /* gray-600 */
+            line-height: 1.6;
+        }
+        .step-io {
+            margin-top: 0.75rem;
+            font-size: 0.8rem; /* text-xs */
+            color: #6b7280; /* gray-500 */
+        }
+        .step-io strong { color: #374151; /* gray-700 */ }
+        .arrow-down {
+            text-align: center;
+            font-size: 1.5rem; /* text-2xl */
+            color: #9ca3af; /* gray-400 */
+            margin: 0.5rem 0 1rem 0;
+        }
+        .data-packet {
+            background-color: #ecfdf5; /* green-50 */
+            border: 1px dashed #10b981; /* green-500 */
+            color: #065f46; /* green-800 */
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+            text-align: center;
+            font-weight: 500;
+        }
+        .decision-box {
+            background-color: #fffbeb; /* yellow-50 */
+            border: 1px solid #f59e0b; /* amber-500 */
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            font-weight: 500;
+            margin: 1rem 0;
+            color: #92400e; /* amber-800 */
+        }
+        .decision-box strong { font-size: 1rem; }
+        .outcome-box {
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+        .outcome-accept { background-color: #d1fae5; color: #065f46; border: 1px solid #10b981;} /* green */
+        .outcome-reject { background-color: #fee2e2; color: #991b1b; border: 1px solid #ef4444;} /* red */
+
+    </style>
+</head>
+<body>
+    <div class="flowchart-container">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight">
+                Aadhaar-Based Identity Verification Flowchart (ZKP PoC)
+            </h1>
+            <p class="mt-3 text-lg text-gray-500">
+                Illustrating the client-side and platform-side processing for the "Green Badge" using Aadhaar eKYC.
+            </p>
+        </header>
+
+        <!-- Client-Side Processing -->
+        <div class="flowchart-section">
+            <h2 class="section-title">Phase 1: Client-Side Data Preparation & Proof Generation</h2>
+
+            <div class="flow-step">
+                <h3 class="step-heading"><i class="fas fa-file-import"></i>1. Input Acquisition & Parsing</h3>
+                <p class="step-description">
+                    User provides their Aadhaar eKYC XML (and share phrase). The client-side tool decrypts and securely parses this XML locally.
+                    User also provides their claimed profile name and DoB for the social media platform.
+                </p>
+                <p class="step-io">
+                    <strong>Inputs:</strong> Aadhaar eKYC XML (e.g., containing "SINDHURAS", "30-11-2001", Gender "F", Last4 "7439"), Share Phrase, Claimed Profile Name ("SINDHURAS"), Claimed Profile DoB ("30-11-2001"), Social Media Handle ("@SindhuHandle").<br>
+                    <strong>Output:</strong> Parsed & structured Aadhaar data, UIDAI signature components, user's claimed data.
+                </p>
+            </div>
+            <div class="arrow-down"><i class="fas fa-long-arrow-alt-down"></i></div>
+
+            <div class="flow-step">
+                <h3 class="step-heading"><i class="fas fa-shield-alt"></i>2. UIDAI Signature Verification (Client-Side)</h3>
+                <p class="step-description">
+                    The client-side tool verifies the UIDAI's digital signature on the parsed eKYC XML data using standard cryptographic libraries (e.g., ECDSA/RSA verification) and UIDAI's public key (extracted from the XML's certificate, chained to a trusted root).
+                </p>
+                <p class="step-io">
+                    <strong>Inputs:</strong> Parsed Aadhaar data (specifically the signed portion's hash), UIDAI's signature components, UIDAI's public key.<br>
+                    <strong>Process:</strong> Standard digital signature verification algorithm.<br>
+                    <strong>Output:</strong> Boolean (Signature Valid / Invalid). Process halts if invalid.
+                </p>
+            </div>
+            <div class="arrow-down"><i class="fas fa-long-arrow-alt-down"></i></div>
+
+            <div class="flow-step">
+                <h3 class="step-heading"><i class="fas fa-tasks"></i>3. Feature Extraction & Demographic Match</h3>
+                <p class="step-description">
+                    Key demographic features (Name, DoB, Gender, Last4Digits of Aadhaar) are extracted from the now-verified Aadhaar data. These are then compared against the user's claimed profile name and DoB.
+                </p>
+                <p class="step-io">
+                    <strong>Inputs:</strong> Verified Aadhaar Name ("SINDHURAS"), DoB ("30-11-2001"), Gender ("F"), Last4 ("7439"). Claimed Profile Name ("SINDHURAS"), DoB ("30-11-2001").<br>
+                    <strong>Process:</strong> Direct comparison (e.g., `AadhaarName === ClaimedName`).<br>
+                    <strong>Output:</strong> Boolean (Demographics Match / No Match). Process halts if no match.
+                </p>
+            </div>
+            <div class="arrow-down"><i class="fas fa-long-arrow-alt-down"></i></div>
+
+            <div class="flow-step">
+                <h3 class="step-heading"><i class="fas fa-fingerprint"></i>4. Nullifier Calculation</h3>
+                <p class="step-description">
+                    A unique nullifier is computed client-side using a ZKP-friendly hash (Poseidon) of stable, verified Aadhaar demographic data (Name, DoB, Gender, Last 4 Digits), the social media handle, and a system-specific salt. This prevents double-registration for the same identity.
+                </p>
+                <p class="step-io">
+                    <strong>Inputs:</strong> Verified Aadhaar Name ("SINDHURAS"), DoB ("30-11-2001"), Gender ("F"), Last4 ("7439"), SocialMediaHandle ("@SindhuHandle"), SALT.<br>
+                    <strong>Process:</strong> `Nullifier = PoseidonHash(Name, DoB, Gender, Last4, Handle, SALT)`.<br>
+                    <strong>Output:</strong> `ComputedNullifier` (e.g., "999988887...").
+                </p>
+            </div>
+            <div class="arrow-down"><i class="fas fa-long-arrow-alt-down"></i></div>
+
+            <div class="flow-step">
+                <h3 class="step-heading"><i class="fas fa-cogs"></i>5. Witness & Public Input Preparation</h3>
+                <p class="step-description">
+                    All private inputs (verified Aadhaar data, user claims, UIDAI signature components) and public inputs (claimed handle, computed nullifier, commitments like hash of Aadhaar demographics) are assembled for the ZKP circuit.
+                </p>
+                <p class="step-io">
+                    <strong>Output:</strong> Structured `input.json` for the ZKP witness calculator.
+                </p>
+            </div>
+            <div class="arrow-down"><i class="fas fa-long-arrow-alt-down"></i></div>
+
+             <div class="flow-step">
+                <h3 class="step-heading"><i class="fas fa-magic"></i>6. ZKP Proof Generation</h3>
+                <p class="step-description">
+                    The client-side tool uses the prepared witness, the Proving Key (specific to the Aadhaar verification Circom circuit), and standard ZKP libraries (e.g., `snarkjs` with Groth16) to generate the Zero-Knowledge Proof (`π`) and the final public outputs.
+                </p>
+                <p class="step-io">
+                    <strong>Inputs:</strong> Witness (`.wtns`), Proving Key (`.zkey`).<br>
+                    <strong>Process:</strong> Groth16 `prove` algorithm.<br>
+                    <strong>Output:</strong> `ZKProof (π)`, `PublicOutputs` (containing nullifier, commitments, claimed handle, etc.).
+                </p>
+            </div>
+
+            <div class="data-packet">
+                <i class="fas fa-paper-plane mr-2"></i>Data Packet Sent to Platform: { ZKProof (`π`), PublicOutputs (incl. Nullifier, Handle, Commitments), EntityType }
+            </div>
+        </div>
+
+        <!-- Platform-Side Processing -->
+        <div class="flowchart-section">
+            <h2 class="section-title">Phase 2: Platform-Side Verification & Decision Making</h2>
+
+            <div class="flow-step">
+                <h3 class="step-heading"><i class="fas fa-cloud-download-alt"></i>7. Receive Submission Package</h3>
+                <p class="step-description">
+                    The platform's secure API endpoint receives the ZKProof, PublicOutputs, and EntityType from the client. Initial validation of package format and completeness is performed.
+                </p>
+                <p class="step-io">
+                    <strong>Input:</strong> Data Packet from Client.
+                </p>
+            </div>
+            <div class="arrow-down"><i class="fas fa-long-arrow-alt-down"></i></div>
+
+            <div class="flow-step">
+                <h3 class="step-heading"><i class="fas fa-user-shield"></i>8. ZKP Proof Verification</h3>
+                <p class="step-description">
+                    The platform retrieves the Verification Key (VK) corresponding to the Aadhaar verification circuit. It then runs the standard Groth16 `verify` algorithm using the VK, the submitted ZKProof, and the PublicOutputs.
+                </p>
+                <p class="step-io">
+                    <strong>Inputs:</strong> ZKProof (`π`), PublicOutputs, Verification Key (`.json`).<br>
+                    <strong>Process:</strong> Groth16 `verify` algorithm.<br>
+                    <strong>Output:</strong> Boolean (Proof Valid / Invalid).
+                </p>
+            </div>
+            
+            <div class="decision-box">
+                <strong>Decision: Is Proof Valid?</strong>
+            </div>
+            <div class="grid grid-cols-2 gap-4 items-start">
+                <div class="text-center">
+                    <p class="text-sm font-medium text-green-600 mb-1">YES <i class="fas fa-check-circle"></i></p>
+                    <div class="arrow-down"><i class="fas fa-long-arrow-alt-down"></i></div>
+                    <div class="flow-step">
+                        <h3 class="step-heading"><i class="fas fa-database"></i>9. Nullifier Uniqueness Check</h3>
+                        <p class="step-description">
+                            If the proof is valid, the platform extracts the `Nullifier` from the PublicOutputs. It queries its secure nullifier database to check if this nullifier has already been recorded for this identity type.
+                        </p>
+                        <p class="step-io">
+                            <strong>Input:</strong> `Nullifier`.<br>
+                            <strong>Process:</strong> Database lookup.<br>
+                            <strong>Output:</strong> Boolean (Nullifier Unique / Already Exists).
+                        </p>
+                    </div>
+                     <div class="decision-box mt-4">
+                        <strong>Decision: Is Nullifier Unique?</strong>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 items-start">
+                        <div class="text-center">
+                             <p class="text-sm font-medium text-green-600 mb-1">YES <i class="fas fa-check-circle"></i></p>
+                            <div class="arrow-down"><i class="fas fa-long-arrow-alt-down"></i></div>
+                             <div class="flow-step">
+                                <h3 class="step-heading"><i class="fas fa-id-badge"></i>10. Record Nullifier & Issue Badge</h3>
+                                <p class="step-description">
+                                    If unique, the nullifier is recorded. The "Green Badge" is issued to the user's social media handle. User is notified.
+                                </p>
+                            </div>
+                            <div class="outcome-box outcome-accept">Green Badge Issued</div>
+                        </div>
+                        <div class="text-center">
+                             <p class="text-sm font-medium text-red-600 mb-1">NO <i class="fas fa-times-circle"></i></p>
+                            <div class="arrow-down"><i class="fas fa-long-arrow-alt-down"></i></div>
+                             <div class="flow-step">
+                                <h3 class="step-heading"><i class="fas fa-ban"></i>11. Reject Request</h3>
+                                <p class="step-description">
+                                    Application rejected (Nullifier already used). User is notified.
+                                </p>
+                            </div>
+                            <div class="outcome-box outcome-reject">Verification Rejected</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <p class="text-sm font-medium text-red-600 mb-1">NO <i class="fas fa-times-circle"></i></p>
+                    <div class="arrow-down"><i class="fas fa-long-arrow-alt-down"></i></div>
+                    <div class="flow-step">
+                         <h3 class="step-heading"><i class="fas fa-ban"></i>11. Reject Request</h3>
+                        <p class="step-description">
+                            Application rejected (Invalid Proof). User is notified.
+                        </p>
+                    </div>
+                    <div class="outcome-box outcome-reject">Verification Rejected</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>
