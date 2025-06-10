@@ -62,7 +62,6 @@ This proof-of-concept implements three distinct verification flows based on Indi
 ### **Repository Structure**
 
 ```
-├── circuits/             # Contains all the Circom circuit files (.circom)
 ├── demo-webpage/         # Contains the HTML, CSS, and JS for the live demo
 ├── scripts/              # Supporting scripts for compiling circuits, generating proofs, etc.
 └── README.md             # This file
@@ -91,7 +90,7 @@ If you use this work, please cite the full project report:
 
 > S. Sindhura, "Privacy-Preserving Verification on Twitter Using Zero-Knowledge Proofs," M.Tech Project Report, Indian Institute of Science, Bangalore, 2025.
 >
-> **[Link to your full report PDF]**
+
 
 ### **License**
 
