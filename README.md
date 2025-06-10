@@ -6,7 +6,6 @@ A proof-of-concept implementation of privacy-preserving social media verificatio
 This repository contains the proof-of-concept implementation for the M.Tech project, "Privacy-Preserving Verification on Twitter Using Zero-Knowledge Proofs." The project proposes a novel framework to restore trust and clarity to social media account verification.
 
 **Author:** Sindhura S  
-**Institution:** Indian Institute of Science (IISc), Bangalore
 
 ---
 
@@ -16,11 +15,7 @@ The proliferation of social media platforms has been accompanied by a significan
 
 ---
 
-### **Live Demo**
 
-A functional web-based demonstration of the user-side proof generation process can be accessed here:
-
-**[Link to your live demo hosted on GitHub Pages]**
 
 ---
 
@@ -92,6 +87,4 @@ If you use this work, please cite the full project report:
 >
 
 
-### **License**
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
