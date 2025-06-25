@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy-Preserving Verification on Twitter Using Zero-Knowledge Proofs Demo</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --color-bg: #f8f9fa;
+            --color-text: #333;
+            --color-primary: #007bff;
+            --color-primary-dark: #0056b3;
+            --color-success: #28a745;
+            --color-failure: #dc3545;
+            --color-pending: #6c757d;
+            --color-progress: #17a2b8;
+            --color-card-bg: #ffffff;
+            --border-radius: 8px;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --transition-speed: 0.4s;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: auto;
+            background-color: var(--color-card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        header { background-color: var(--color-primary); color: white; padding: 1.5rem 2rem; text-align: center; }
+        header h1 { font-weight: 600; }
+
+        .main-content { display: flex; flex-wrap: wrap; }
+
+        .input-section, .flowchart-section { padding: 2rem; flex-grow: 1; transition: all var(--transition-speed) ease; }
+        .input-section { flex-basis: 30%; border-right: 1px solid #e9ecef; }
+        .flowchart-section { flex-basis: 70%; }
+        
+        .input-section h2 { margin-bottom: 1.5rem; color: var(--color-primary-dark); font-weight: 600; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+        .form-group input { width: 100%; padding: 0.75rem; border: 1px solid #ced4da; border-radius: var(--border-radius); font-family: 'Poppins', sans-serif; font-size: 1rem; }
+        .form-group input[type="file"] { display: none; }
+        
+        .file-upload-label { display: inline-block; width: 100%; padding: 0.75rem; background: #e9ecef; border: 1px dashed #ced4da; text-align: center; cursor: pointer; border-radius: var(--border-radius); transition: background-color var(--transition-speed) ease; }
+        .file-upload-label:hover { background-color: #dee2e6; }
+        .file-upload-label.file-selected { background-color: var(--color-success); color: white; border-color: var(--color-success); }
+
+        .verify-btn { width: 100%; padding: 0.85rem; border: none; background-color: var(--color-primary); color: white; font-size: 1.1rem; font-weight: 600; border-radius: var(--border-radius); cursor: pointer; transition: background-color var(--transition-speed) ease; }
+        .verify-btn:hover:not(:disabled) { background-color: var(--color-primary-dark); }
+        .verify-btn:disabled { background-color: var(--color-pending); cursor: not-allowed; }
+        
+        #error-message { color: var(--color-failure); font-weight: 500; margin-top: 1rem; text-align: center; min-height: 1.2em; }
+        
+        .phase { margin-bottom: 2rem; }
+        .phase h3 { text-align: center; background-color: #e9ecef; padding: 0.5rem; border-radius: var(--border-radius); margin-bottom: 1.5rem; font-weight: 500; }
+
+        .flowchart-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
+
+        .step { border: 2px solid #ced4da; background-color: #f8f9fa; border-radius: var(--border-radius); padding: 1rem; transition: all var(--transition-speed) ease; position: relative; }
+        .step-header { display: flex; align-items: center; gap: 1rem; }
+        .step-icon { font-size: 1.5rem; color: var(--color-pending); transition: color var(--transition-speed) ease; }
+        .step-title h4 { font-size: 1rem; font-weight: 600; margin: 0; }
+        .step-title p { font-size: 0.85rem; color: #6c757d; margin: 0; }
+        
+        .step-details { margin-top: 0.8rem; text-align: left; max-height: 0; opacity: 0; overflow: hidden; transition: max-height 0.5s ease-in-out, opacity 0.5s ease, margin-top 0.5s ease; }
+        .step-io { margin-bottom: 0.3rem; line-height: 1.4; }
+        .step-io strong { font-weight: 600; }
+        .step-io code { font-family: 'Roboto Mono', monospace; background-color: #e9ecef; padding: 0.2rem 0.4rem; border-radius: 4px; font-size: 0.8rem; word-break: break-all; }
+        
+        .step.active .step-details, .step.success .step-details, .step.failure .step-details { max-height: 150px; opacity: 1; }
+
+        .step.active { transform: scale(1.05); box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 10; }
+        .step.success { border-color: var(--color-success); background-color: #e9f7ec; }
+        .step.success .step-icon { color: var(--color-success); }
+        .step.failure { border-color: var(--color-failure); background-color: #fdeaea; }
+        .step.failure .step-icon { color: var(--color-failure); }
+        .step.in-progress { border-color: var(--color-progress); background-color: #e8f7fa; }
+        .step.in-progress .step-icon { color: var(--color-progress); }
+
+        .step .border-anim { position: absolute; background-color: var(--color-success); transition: all 1.5s ease-out; }
+        .step .border-anim.top, .step .border-anim.bottom { height: 3px; width: 0; }
+        .step .border-anim.left, .step .border-anim.right { width: 3px; height: 0; }
+        .step .border-anim.top { top: -2px; left: -2px; }
+        .step .border-anim.bottom { bottom: -2px; right: -2px; }
+        .step .border-anim.left { bottom: -2px; left: -2px; }
+        .step .border-anim.right { top: -2px; right: -2px; }
+
+        .step.border-animated .border-anim.top { width: calc(100% + 4px); transition-duration: 0.4s; }
+        .step.border-animated .border-anim.right { height: calc(100% + 4px); transition-duration: 0.4s; transition-delay: 0.4s; }
+        .step.border-animated .border-anim.bottom { width: calc(100% + 4px); transition-duration: 0.4s; transition-delay: 0.8s; }
+        .step.border-animated .border-anim.left { height: calc(100% + 4px); transition-duration: 0.4s; transition-delay: 1.2s; }
+        
+        #data-transfer-animation { text-align: center; margin: 2rem 0; font-size: 2rem; color: var(--color-primary); display: none; animation: pulse-arrow 1.5s infinite; }
+        @keyframes pulse-arrow { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+        #final-result { margin-top: 2rem; padding: 2rem; border-radius: var(--border-radius); text-align: center; display: none; opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; }
+        #final-result.show { display: block; opacity: 1; transform: translateY(0); }
+        #final-result.success { background-color: #e9f7ec; border: 2px solid var(--color-success); color: var(--color-success); }
+        #final-result.failure { background-color: #fdeaea; border: 2px solid var(--color-failure); color: var(--color-failure); }
+        #final-result h2 { font-size: 2rem; font-weight: 700; }
+        #final-result i { margin-right: 1rem; }
+
+        @media (max-width: 992px) {
+            .input-section { flex-basis: 100%; border-right: none; border-bottom: 1px solid #e9ecef; }
+            .flowchart-section { flex-basis: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Privacy-Preserving Verification on Twitter Using Zero-Knowledge Proofs Demo</h1>
+        </header>
+
+        <main class="main-content">
+            <section class="input-section">
+                <h2>Step 1: Provide Your Details</h2>
+                <div class="form-group">
+                    <label for="xmlFile" class="file-upload-label" id="fileUploadLabel">
+                        <i class="fas fa-file-upload"></i> Upload Encrypted Aadhaar XML
+                    </label>
+                    <input type="file" id="xmlFile">
+                </div>
+                <div class="form-group">
+                    <label for="shareCode">Enter Share Code</label>
+                    <input type="password" id="shareCode" placeholder="4 digit passcode" maxlength="4">
+                </div>
+                <div class="form-group">
+                    <label for="profileName">Enter Your Profile Handle Name</label>
+                    <input type="text" id="HandleName" placeholder="e.g., @Sindhu30">
+                </div>
+                <div class="form-group">
+                    <label for="profileName">Automatically Fetched Profile Name</label>
+                    <input type="text" id="profileName" placeholder="e.g., Sindhura S">
+                </div>
+                <div class="form-group">
+                    <label for="profileDob">Automatically Fetched Profile Date of Birth (DD-MM-YYYY)</label>
+                    <input type="text" id="profileDob" placeholder="e.g., 30-11-2001">
+                </div>
+
+                <button id="verifyBtn" class="verify-btn" disabled>Begin Verification</button>
+                <p id="error-message"></p>
+            </section>
+
+            <section class="flowchart-section">
+                <div class="phase">
+                    <h3>Phase 1: Client-Side Data Preparation & Proof Generation</h3>
+                    <div class="flowchart-steps" id="phase1-steps"></div>
+                </div>
+                <div id="data-transfer-animation"><i class="fas fa-arrow-down"></i><p style="font-size: 1rem; margin-top: 0.5rem;">Data Sent: ZKProof('π'), PublicOutputs (incl. Nullifier, Handle), EntityType</p></div>
+                <div class="phase">
+                    <h3>Phase 2: Platform-Side Verification & Decision</h3>
+                     <div class="flowchart-steps" id="phase2-steps"></div>
+                </div>
+                <div id="final-result"><h2 id="result-text"></h2></div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mockAadhaarDatabase = {
+                "1234": { name: "SINDHURA S", dob: "30-11-2001", gender: "F", last4: "7439" },
+                "5678": { name: "SREECHAND R", dob: "11-04-2002", gender: "M", last4: "9314" }
+            };
+            const usedIdentities = [{ name: 'SINDHURA S', dob: '30-11-2001' }];
+
+            const verifyBtn = document.getElementById('verifyBtn');
+            const fileInput = document.getElementById('xmlFile');
+            const fileUploadLabel = document.getElementById('fileUploadLabel');
+            const shareCodeInput = document.getElementById('shareCode');
+            const profileNameInput = document.getElementById('profileName');
+            const profileDobInput = document.getElementById('profileDob');
+            const errorMessage = document.getElementById('error-message');
+            const dataTransferAnim = document.getElementById('data-transfer-animation');
+            const finalResult = document.getElementById('final-result');
+            const resultText = document.getElementById('result-text');
+            const phase1Container = document.getElementById('phase1-steps');
+            const phase2Container = document.getElementById('phase2-steps');
+            
+            const stepDefinitions = {
+                1: { title: "Input & Parse", desc: "User provides Aadhaar eKYC XML & share phrase. Tool decrypts & parses locally.", icon: "fa-keyboard", phase: 1 },
+                2: { title: "UIDAI Sig Verify", desc: "Client tool verifies UIDAI's signature on eKYC XML using standard crypto.", icon: "fa-signature", phase: 1 },
+                3: { title: "Feature Extract & Match", desc: "Key demos from verified Aadhaar data extracted & compared against user's profile.", icon: "fa-tasks", phase: 1 },
+                4: { title: "Nullifier Calc", desc: "Unique nullifier computed client-side via Poseidon hash of stable, verified demos.", icon: "fa-fingerprint", phase: 1 },
+                5: { title: "Witness & Inputs Prep", desc: "Private & public inputs assembled for ZKP circuit.", icon: "fa-box-open", phase: 1 },
+                6: { title: "ZKP Proof Gen", desc: "Client uses witness, Proving Key & ZKP libs to generate ZK-Proof.", icon: "fa-cogs", phase: 1 },
+                7: { title: "Receive Package", desc: "Platform API receives ZKProof, PublicOutputs, EntityType.", icon: "fa-inbox", phase: 2 },
+                8: { title: "ZKP Verify", desc: "Platform retrieves VK, runs Groth16 'verify' using VK, ZKProof & PublicOutputs.", icon: "fa-shield-alt", phase: 2 },
+                9: { title: "Nullifier Check", desc: "If proof valid, platform queries nullifier DB for this ID type.", icon: "fa-database", phase: 2 },
+                10: { title: "Record & Issue", desc: "Nullifier recorded. Green Badge issued. User notified.", icon: "fa-award", phase: 2 }
+            };
+
+            const createStepHTML = (id, {title, desc, icon}) => `
+                <div class="step" id="step-${id}">
+                    <div class="border-anim top"></div><div class="border-anim right"></div><div class="border-anim bottom"></div><div class="border-anim left"></div>
+                    <div class="step-header">
+                        <div class="step-icon"><i class="fas ${icon}"></i></div>
+                        <div class="step-title">
+                            <h4>${id}. ${title}</h4>
+                            <p>${desc}</p>
+                        </div>
+                    </div>
+                    <div class="step-details">
+                        <div class="step-io"><strong>In:</strong> <code class="in-data"></code></div>
+                        <div class="step-io"><strong>Proc:</strong> <code class="proc-data"></code></div>
+                        <div class="step-io"><strong>Out:</strong> <code class="out-data"></code></div>
+                    </div>
+                </div>`;
+
+            const initializeFlowchart = () => {
+                phase1Container.innerHTML = '';
+                phase2Container.innerHTML = '';
+                for (const id in stepDefinitions) {
+                    const step = stepDefinitions[id];
+                    const html = createStepHTML(id, step);
+                    if (step.phase === 1) phase1Container.innerHTML += html;
+                    else phase2Container.innerHTML += html;
+                }
+            };
+            
+            const delay = ms => new Promise(res => setTimeout(res, ms));
+
+            const updateStep = (id, status, {inData, procData, outData} = {}) => {
+                const stepEl = document.getElementById(`step-${id}`);
+                if (!stepEl) return;
+                
+                stepEl.classList.remove('success', 'failure', 'in-progress');
+                if(status) stepEl.classList.add(status);
+
+                const iconEl = stepEl.querySelector('.step-icon i');
+                iconEl.className = 'fas';
+                if (status === 'success') iconEl.classList.add('fa-check-circle');
+                else if (status === 'failure') iconEl.classList.add('fa-times-circle');
+                else if (status === 'in-progress') iconEl.classList.add('fa-spinner', 'fa-spin');
+                else iconEl.classList.add(stepDefinitions[id].icon);
+
+                stepEl.querySelector('.in-data').textContent = inData || '';
+                stepEl.querySelector('.proc-data').textContent = procData || '';
+                stepEl.querySelector('.out-data').textContent = outData || '';
+            };
+
+            const resetSimulation = () => {
+                verifyBtn.disabled = true; 
+                if(fileInput.files.length > 0) verifyBtn.disabled = false;
+                errorMessage.textContent = '';
+                dataTransferAnim.style.display = 'none';
+                finalResult.classList.remove('show', 'success', 'failure');
+                initializeFlowchart();
+            };
+            
+            const runStep = async (id, processingTime, logic) => {
+                const stepEl = document.getElementById(`step-${id}`);
+                stepEl.classList.add('active');
+                
+                const logicResult = await logic();
+                
+                updateStep(id, 'in-progress', { ...logicResult, outData: 'Processing...' });
+                await delay(processingTime);
+                
+                updateStep(id, logicResult.status, logicResult);
+                
+                if (logicResult.status === 'failure') {
+                    errorMessage.textContent = logicResult.errorMsg;
+                    verifyBtn.disabled = false;
+                    stepEl.classList.remove('active');
+                    throw new Error(logicResult.errorMsg);
+                }
+
+                stepEl.classList.add('border-animated');
+                await delay(1600);
+                stepEl.classList.remove('active');
+            };
+
+            const startSimulation = async () => {
+                resetSimulation();
+                verifyBtn.disabled = true;
+
+                const shareCode = shareCodeInput.value;
+                const profileName = profileNameInput.value.trim().toUpperCase();
+                const profileDob = profileDobInput.value.trim();
+                let aadhaarData;
+
+                try {
+                    await runStep(1, 1500, async () => {
+                        aadhaarData = mockAadhaarDatabase[shareCode];
+                        const status = (!/^\d{4}$/.test(shareCode) || !aadhaarData) ? 'failure' : 'success';
+                        return {
+                            status: status,
+                            inData: `Aadhaar XML, Share Phrase`,
+                            procData: `Local Decryption & XML Parsing`,
+                            outData: status === 'success' ? `Parsed Aadhaar data, UIDAI sig components, claims` : 'Error: Invalid Share Phrase',
+                            errorMsg: 'Incorrect or invalid 4-digit Share Phrase.'
+                        };
+                    });
+                    
+                    await runStep(2, 1000, async () => ({
+                        status: 'success',
+                        inData: `Parsed Aadhaar data hash, UIDAI sig components, UIDAI PubKey`,
+                        procData: `Std. Crypto Signature Verification`,
+                        outData: 'Boolean(Valid)'
+                    }));
+
+                    await runStep(3, 1500, async () => {
+                        const status = (profileName === aadhaarData.name && profileDob === aadhaarData.dob) ? 'success' : 'failure';
+                        return {
+                            status: status,
+                            inData: `Verified Aadhaar('${aadhaarData.name}', '${aadhaarData.dob}'), Claims('${profileName}', '${profileDob}')`,
+                            procData: `Compare`,
+                            outData: status === 'success' ? 'Boolean(Match)' : 'Boolean(No Match)',
+                            errorMsg: 'Profile Mismatch. Verification Halted.'
+                        };
+                    });
+
+                    await runStep(4, 1500, async () => ({
+                        status: 'success',
+                        inData: `Verified Demos('${aadhaarData.name}', '${aadhaarData.dob}', '${aadhaarData.gender}', '${aadhaarData.last4}'), SALT`,
+                        procData: `Nullifier = PoseidonHash(...)`,
+                        outData: 'ComputedNullifier'
+                    }));
+
+                    await runStep(5, 1000, async () => ({
+                        status: 'success',
+                        inData: `Private(verified Aadhaar data, claims, sig components) & Public(nullifier, commitments)`,
+                        procData: 'Assembling JSON for witness calculator',
+                        outData: `structured 'input.json'`
+                    }));
+
+                    await runStep(6, 2500, async () => ({
+                        status: 'success',
+                        inData: `Witness (.wtns), Proving Key (.zkey)`,
+                        procData: `Groth16 'prove'`,
+                        outData: `ZKProof('π'), PublicOutputs`
+                    }));
+
+                    dataTransferAnim.style.display = 'block';
+                    await delay(2000);
+                    dataTransferAnim.style.display = 'none';
+
+                    await runStep(7, 500, async () => ({
+                        status: 'success', inData: 'Data Packet from Client', procData: 'Initial Format/Completeness Validation', outData: 'Packet OK'
+                    }));
+
+                    await runStep(8, 1500, async () => ({
+                        status: 'success', inData: `ZKProof('π'), PublicOutputs, VK`, procData: `Groth16 'verify'`, outData: 'Boolean(Valid)'
+                    }));
+                    
+                    await runStep(9, 1500, async () => {
+                        const identityExists = usedIdentities.some(id => id.name === profileName && id.dob === profileDob);
+                        return {
+                            status: identityExists ? 'failure' : 'success',
+                            inData: 'Nullifier',
+                            procData: 'DB lookup',
+                            outData: identityExists ? 'Boolean(Exists)' : 'Boolean(Unique)',
+                            errorMsg: 'This identity has already been issued a Green Badge.'
+                        };
+                    });
+                    
+                    await runStep(10, 1000, async () => ({
+                        status: 'success', inData: 'Nullifier, UserID', procData: 'Update DB, Issue Badge Status', outData: 'Green Badge Issued'
+                    }));
+
+                    finalResult.classList.add('success', 'show');
+                    resultText.innerHTML = '<i class="fas fa-check-circle"></i> Green Badge Issued';
+                    verifyBtn.disabled = false;
+
+                } catch (error) {
+                    console.error("Simulation halted:", error.message);
+                }
+            };
+
+            fileInput.addEventListener('change', () => {
+                if (fileInput.files.length > 0) {
+                    fileUploadLabel.textContent = `File Selected: ${fileInput.files[0].name}`;
+                    fileUploadLabel.classList.add('file-selected');
+                    verifyBtn.disabled = false;
+                } else {
+                    fileUploadLabel.innerHTML = '<i class="fas fa-file-upload"></i> Upload Encrypted Aadhaar XML';
+                    fileUploadLabel.classList.remove('file-selected');
+                    verifyBtn.disabled = true;
+                }
+            });
+
+            initializeFlowchart();
+            verifyBtn.addEventListener('click', startSimulation);
+        });
+    </script>
+</body>
+</html>
