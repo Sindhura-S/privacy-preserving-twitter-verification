@@ -11,7 +11,7 @@ This repository contains the proof-of-concept implementation for the M.Tech proj
 
 ### **Abstract**
 
-The proliferation of social media platforms has been accompanied by a significant erosion of trust, largely fueled by the ambiguity of account verification mechanisms. [cite_start]This project addresses the urgent need for a robust and trustworthy system by proposing a differentiated **two-tier verification framework**. [cite_start]This framework separates a basic, subscription-based "Blue Badge" from a high-assurance "Green Badge" that signifies cryptographically verified authenticity using Zero-Knowledge Proofs (ZKPs). [cite_start]As a proof-of-concept, this work develops ZKP circuits to verify entities within the Indian digital identity ecosystem.
+The proliferation of social media platforms has been accompanied by a significant erosion of trust, largely fueled by the ambiguity of account verification mechanisms. This project addresses the urgent need for a robust and trustworthy system by proposing a differentiated **two-tier verification framework**.This framework separates a basic, subscription-based "Blue Badge" from a high-assurance "Green Badge" that signifies cryptographically verified authenticity using Zero-Knowledge Proofs (ZKPs). As a proof-of-concept, this work develops ZKP circuits to verify entities within the Indian digital identity ecosystem.
 
 ---
 
@@ -24,12 +24,12 @@ The proliferation of social media platforms has been accompanied by a significan
 This project introduces two primary components to solve the current verification problem:
 
 * **The Two-Tier Badge System:**
-    * [cite_start]**Blue Badge:** A basic subscription tier that provides access to premium features but does *not* signify rigorous identity verification.
-    * [cite_start]**Green Badge:** A high-assurance signal of authenticity awarded only after a user successfully proves their identity through a privacy-preserving ZKP-based protocol.
+    * **Blue Badge:** A basic subscription tier that provides access to premium features but does *not* signify rigorous identity verification.
+    * **Green Badge:** A high-assurance signal of authenticity awarded only after a user successfully proves their identity through a privacy-preserving ZKP-based protocol.
 
 * **Privacy-Preserving Verification with ZKPs:**
-    * [cite_start]The core technical innovation is the use of the **Groth16 zk-SNARK** scheme to allow users to prove claims about their identity without revealing the underlying sensitive data to the social media platform.
-    * [cite_start]All sensitive document parsing and proof generation occurs entirely on the client's side.
+    * The core technical innovation is the use of the **Groth16 zk-SNARK** scheme to allow users to prove claims about their identity without revealing the underlying sensitive data to the social media platform.
+    * All sensitive document parsing and proof generation occurs entirely on the client's side.
 
 ### **Technical Stack**
 
@@ -43,15 +43,15 @@ This project introduces two primary components to solve the current verification
 This proof-of-concept implements three distinct verification flows based on India's digital identity infrastructure:
 
 1.  **Individual Verification:**
-    * [cite_start]**Required Document:** Aadhaar Paperless Offline eKYC XML file, downloaded from the official UIDAI portal.
-    * **Process:** The user provides the XML file and their chosen "share phrase". [cite_start]The client-side logic verifies the UIDAI's digital signature on the XML, then generates a ZKP attesting to key demographic data (e.g., name, date of birth) without revealing the Aadhaar number or other PII to the platform.
+    * **Required Document:** Aadhaar Paperless Offline eKYC XML file, downloaded from the official UIDAI portal.
+    * **Process:** The user provides the XML file and their chosen "share phrase". The client-side logic verifies the UIDAI's digital signature on the XML, then generates a ZKP attesting to key demographic data (e.g., name, date of birth) without revealing the Aadhaar number or other PII to the platform.
 
 2.  **Government Organization Verification:**
-    * [cite_start]**Required Documents:** Proof of ownership of a `.gov.in` domain (recognized by the NIC) and a valid Digital Signature Certificate (DSC) from an authorized official.
+    * **Required Documents:** Proof of ownership of a `.gov.in` domain (recognized by the NIC) and a valid Digital Signature Certificate (DSC) from an authorized official.
     * **Process:** An authorized official signs a standardized attestation message with their DSC. The ZKP proves the validity of this signature and links it to the official government domain, asserting the account's authenticity.
 
 3.  **Private Company Verification:**
-    * [cite_start]**Required Documents:** The company's Certificate of Incorporation (COI) to source its unique Corporate Identification Number (CIN) and a valid DSC from an authorized signatory.
+    * **Required Documents:** The company's Certificate of Incorporation (COI) to source its unique Corporate Identification Number (CIN) and a valid DSC from an authorized signatory.
     * **Process:** Similar to the government flow, an authorized signatory attests to the company's ownership of the social media handle using their DSC. The ZKP verifies this attestation against the company's unique CIN.
 
 ### **Repository Structure**
